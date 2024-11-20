@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Village Banking</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Village Banking</h1>
+        <nav>
+            <a href="#members">Members</a>
+            <a href="#projects">Projects</a>
+            <a href="#payments">Payments</a>
+            <a href="#meetings">Meetings</a>
+        </nav>
+    </header>
+    <main>
+        <!-- Total Balance -->
+        <section id="totalBalance">
+            <h2>Total Balance</h2>
+            <p>Total Money Balance: <span id="moneyBalance">0</span></p>
+        </section>
+
+        <!-- Members Section -->
+        <section id="members">
+            <h2>Manage Members</h2>
+            <form id="addMemberForm">
+                <input type="text" id="memberName" placeholder="Enter Member Name" required>
+                <input type="number" id="contributionAmount" placeholder="Initial Contribution Amount" required>
+                <button type="submit">Add Member</button>
+            </form>
+            <ul id="membersList"></ul>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <h2>Current Projects</h2>
+            <form id="addProjectForm">
+                <input type="text" id="projectName" placeholder="Enter Project Name" required>
+                <button type="submit">Add Project</button>
+            </form>
+            <ul id="projectsList"></ul>
+        </section>
+
+        <!-- Payments Section -->
+        <section id="payments">
+            <h2>Make a Payment</h2>
+            <form id="paymentForm">
+                <input type="text" id="memberPaymentName" placeholder="Member Name" required>
+                <input type="number" id="paymentAmount" placeholder="Enter Amount" required>
+                <select id="paymentMethod" required>
+                    <option value="mobile_money">Mobile Money</option>
+                    <option value="bank_account">Bank Account</option>
+                </select>
+                <button type="submit">Make Payment</button>
+            </form>
+            <ul id="paymentsList"></ul>
+        </section>
+
+        <!-- Meetings Section -->
+        <section id="meetings">
+            <h2>Schedule and Manage Meetings</h2>
+            <form id="scheduleMeetingForm">
+                <input type="text" id="meetingTopic" placeholder="Meeting Topic" required>
+                <input type="datetime-local" id="meetingDateTime" required>
+                <textarea id="meetingBriefing" placeholder="Enter Meeting Briefing (optional)"></textarea>
+                <button type="submit">Schedule Meeting</button>
+            </form>
+            <ul id="meetingsList"></ul>
+
+            <h3>Attendance Tracking</h3>
+            <form id="meetingAttendanceForm">
+                <select id="selectMeeting" required>
+                    <!-- Options populated dynamically -->
+                </select>
+                <input type="text" id="attendeeName" placeholder="Enter Member Name" required>
+                <button type="submit">Mark as Attended</button>
+            </form>
+            <ul id="attendanceList"></ul>
+        </section>
+    </main>
+    <footer>
+        <p>Village Banking &copy; 2024 | Powered by Sylvan Gray Theme</p>
+    </footer>
+</body>
+</html
+
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ebe8e1; /* Sylvan Gray Light Background */
+    color: #4a4a4a; /* Dark Gray */
+}
+
+/* Header */
+header {
+    background-color: #676767; /* Sylvan Gray */
+    color: #fff; /* White */
+    text-align: center;
+    padding: 1.5rem;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header nav a {
+    color: #d9d9d9; /* Light Gray */
+    text-decoration: none;
+    margin: 0 1rem;
+}
+
+header nav a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Section Styles */
+main {
+    padding: 2rem;
+}
+
+section {
+    margin-bottom: 2rem;
+    background-color: #ffffff; /* White for Cards */
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+section h2 {
+    color: #676767;
+}
+
+/* Form and Button Styles */
+form input, form select, form button {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form button {
+    background-color: #676767;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #4a4a4a;
+}
+
+/* Lists */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    background-color: #d9d9d9; /* Light Gray */
+    border-radius: 5px;
+}
+let members = [];
+let totalBalance = 0;
+
+// Add Members with Contributions
+document.getElementById('addMemberForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const memberName = document.getElementById('memberName').value;
+    const contributionAmount = parseFloat(document.getElementById('contributionAmount').value);
+
+    const member = {
+        name: memberName,
+        contribution: contributionAmount
+    };
+    members.push(member);
+    totalBalance += contributionAmount;
+
+    const memberItem = document.createElement('li');
+    memberItem.textContent = `${memberName} - Contributed: ${contributionAmount}`;
+    document.getElementById('membersList').appendChild(memberItem);
+
+    updateBalance();
+    document.getElementById('addMemberForm').reset();
+});
+
+// Make Payments
+document.getElementById('paymentForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const memberName = document.getElementById('memberPaymentName').value;
+    const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
+
+    totalBalance += paymentAmount;
+
+    const paymentItem = document.createElement('li');
+    paymentItem.textContent = `${memberName} paid ${paymentAmount}`;
+    document.getElementById('paymentsList').appendChild(paymentItem);
+
+    updateBalance();
+    document.getElementById('paymentForm').reset();
+});
+
+// Update Total Balance
+function updateBalance() {
+    document.getElementById('moneyBalance').textContent = totalBalance.toFixed(2);
+}
+
+
+from flask import Flask, request, jsonify, render_template
+import mysql.connector
+
+app = Flask(__name__)
+
+# MySQL Connection
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="your_password",
+    database="village_banking"
+)
+cursor = db.cursor()
+
+# Add Member and Contribution
+@app.route('/add_member', methods=['POST'])
+def add_member():
+    data = request.json
+    name = data['name']
+    contribution = data['contribution']
+    cursor.execute("INSERT INTO members (name, contribution) VALUES (%s, %s)", (name, contribution))
+    cursor.execute("UPDATE balance SET total_balance = total_balance + %s", (contribution,))
+    db.commit()
+    return jsonify({"message": "Member added successfully"}), 201
+
+# Make Payment
+@app.route('/make_payment', methods=['POST'])
+def make_payment():
+    data = request.json
+    name = data['name']
+    amount = data['amount']
+    cursor.execute("INSERT INTO payments (member_name, amount) VALUES (%s, %s)", (name, amount))
+    cursor.execute("UPDATE balance SET total_balance = total_balance + %s", (amount,))
+    db.commit()
+    return jsonify({"message": "Payment made successfully"}), 201
+
+# Get Total Balance
+@app.route('/get_balance', methods=['GET'])
+def get_balance():
+    cursor.execute("SELECT total_balance FROM balance")
+    balance = cursor.fetchone()[0]
+    return jsonify({"total_balance": balance}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+CREATE TABLE members (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    contribution DECIMAL(10, 2) NOT NULL
+);
+
+CREATE TABLE payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    member_name VARCHAR(255) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (member_name) REFERENCES members(name)
+);
+
+CREATE TABLE balance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    total_balance DECIMAL(10, 2) DEFAULT 0
+);
+
+-- Initialize Balance
+INSERT INTO balance (total_balance) VALUES (0);
